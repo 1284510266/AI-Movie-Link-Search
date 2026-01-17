@@ -8,7 +8,7 @@ function App() {
   const [error, setError] = useState('')
 
   const handleSearch = async (e) => {
-    e?.preventDefault()
+    if (e) e.preventDefault()
     if (!query.trim()) return
 
     setLoading(true)
@@ -30,6 +30,15 @@ function App() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const [copyStatus, setCopyStatus] = useState(null)
+
+  const handleCopy = (link, index) => {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopyStatus(index)
+      setTimeout(() => setCopyStatus(null), 2000)
+    })
   }
 
   return (
@@ -69,9 +78,20 @@ function App() {
           <div key={index} className="card">
             <h3>{item.title}</h3>
             <p className="info">{item.info}</p>
-            <a href={item.link} target="_blank" rel="noopener noreferrer">
-              Get Download Link
-            </a>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
+              <button
+                className="action-btn primary"
+                onClick={() => window.location.href = item.link}
+              >
+                Open App
+              </button>
+              <button
+                className="action-btn secondary"
+                onClick={() => handleCopy(item.link, index)}
+              >
+                {copyStatus === index ? 'Copied!' : 'Copy Link'}
+              </button>
+            </div>
           </div>
         ))}
       </div>
